@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raman IT Super App</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finance Raihandhika Super App</title><link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
 *{
 margin:0;
 padding:0;
@@ -31,10 +25,395 @@ background:linear-gradient(135deg,#dbeafe,#f8fafc);
 color:#111827;
 }
 
+.login-box,
+.container{
+max-width:1200px;
+margin:auto;
+padding:30px;
+border-radius:30px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
+}
+
 .login-box{
 max-width:400px;
-margin:80px auto;
-padding:35px;
+margin-top:80px;
+text-align:center;
+}
+
+input{
+width:100%;
+padding:14px;
+margin-top:10px;
+border:none;
+border-radius:14px;
+outline:none;
+}
+
+button,.btn{
+padding:14px 20px;
+border:none;
+border-radius:14px;
+background:#38bdf8;
+color:white;
+cursor:pointer;
+font-weight:600;
+margin-top:10px;
+}
+
+button:hover,.btn:hover{
+opacity:0.9;
+}
+
+.container{
+display:none;
+margin-top:20px;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
+margin-bottom:25px;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
+
+.card,.section{
+background:rgba(255,255,255,0.08);
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+}
+
+.card p{
+font-size:28px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.progress{
+width:100%;
+height:20px;
+background:rgba(255,255,255,0.1);
+border-radius:20px;
+overflow:hidden;
+margin-top:15px;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:#22c55e;
+transition:0.5s;
+}
+
+.transaction-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:rgba(255,255,255,0.08);
+padding:12px;
+border-radius:14px;
+margin-top:10px;
+}
+
+.notification{
+position:fixed;
+top:20px;
+right:20px;
+padding:14px 20px;
+background:#22c55e;
+border-radius:14px;
+display:none;
+z-index:999;
+}
+
+canvas{
+background:white;
+border-radius:20px;
+padding:10px;
+margin-top:20px;
+}
+
+.contact{
+text-align:center;
+margin-top:30px;
+}
+
+.contact a{
+text-decoration:none;
+color:white;
+background:#25D366;
+padding:14px 24px;
+border-radius:14px;
+display:inline-block;
+}
+
+.float{
+position:fixed;
+right:20px;
+bottom:20px;
+width:60px;
+height:60px;
+border-radius:50%;
+background:#38bdf8;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+animation:updown 2s infinite;
+}
+
+.money{
+position:fixed;
+top:-50px;
+font-size:25px;
+animation:fall linear forwards;
+}
+
+@keyframes updown{
+0%{transform:translateY(0)}
+50%{transform:translateY(-10px)}
+100%{transform:translateY(0)}
+}
+
+@keyframes fall{
+to{transform:translateY(120vh)}
+}
+</style></head>
+<body><div class="notification" id="notification"></div><div class="login-box" id="loginBox">
+<h2>🔐 Login</h2>
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password" onkeypress="if(event.key==='Enter'){login()} ">
+<button onclick="login()">Masuk</button>
+</div><div class="container" id="mainContent"><div class="header">
+<h1>🚀 Finance Raihandhika Super App</h1>
+<div>
+<button class="btn" onclick="toggleMode()">🌙 Mode</button>
+<button class="btn" onclick="logout()">🚪 Logout</button>
+</div>
+</div><p id="clock"></p><div class="cards">
+<div class="card">
+<h3>📈 Pemasukan</h3>
+<input type="number" id="income" placeholder="Masukkan pemasukan">
+</div><div class="card">
+<h3>📉 Pengeluaran</h3>
+<input type="number" id="expense" placeholder="Masukkan pengeluaran">
+</div><div class="card">
+<h3>💎 Total Saldo</h3>
+<p id="totalMoney">Rp 0</p>
+</div>
+</div><button class="btn" onclick="hitungKeuangan()">💸 Hitung Keuangan</button>
+
+<div class="section">
+<h3>🎯 Target Tabungan</h3>
+<input type="number" id="goalInput" placeholder="Masukkan target tabungan">
+<button class="btn" onclick="setGoal()">Set Target</button>
+<div class="progress">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+<p id="goalText">Belum ada target</p>
+</div><canvas id="financeChart"></canvas>
+
+<div class="section">
+<h3>📝 Riwayat Transaksi</h3>
+<div id="historyList"></div>
+</div><div class="section">
+<h3>🤖 AI Mini Chat</h3>
+<input type="text" id="chatInput" placeholder="Tanya sesuatu..." onkeyup="chatBot(event)">
+<p id="chatResponse"></p>
+</div><div class="section">
+<h3>🎮 Player Stats</h3>
+<p>Level: <span id="level">1</span></p>
+<p>XP: <span id="xp">0</span> / 100</p>
+<p>Coin: <span id="coin">0</span></p>
+</div><div class="section">
+<h3>🔥 Login Streak</h3>
+<p id="streakText">0 Hari</p>
+</div><div class="section">
+<h3>🎡 Lucky Spin</h3>
+<button class="btn" onclick="spinLucky()">SPIN</button>
+<p id="spinResult"></p>
+</div><div class="section">
+<h3>😊 Mood Tracker</h3>
+<button class="btn" onclick="setMood('😊 Senang')">😊</button>
+<button class="btn" onclick="setMood('😴 Capek')">😴</button>
+<button class="btn" onclick="setMood('😎 Semangat')">😎</button>
+<p id="moodText">Belum memilih mood</p>
+</div><div class="section">
+<h3>🐣 Pet Virtual</h3>
+<h1 id="pet">🥚</h1>
+<p id="petText">Pet Level 1</p>
+</div><div class="section">
+<h3>🎨 Tema</h3>
+<button class="btn" onclick="themeGalaxy()">Galaxy</button>
+<button class="btn" onclick="themeNeon()">Neon</button>
+<button class="btn" onclick="themeHacker()">Hacker</button>
+</div><div class="section">
+<h3>⏰ Focus Timer</h3>
+<button class="btn" onclick="startTimer()">Mulai 25 Menit</button>
+<p id="timerText">25:00</p>
+</div><div class="contact">
+<a href="https://wa.me/6283896682281" target="_blank">Contact Us</a>
+</div></div><div class="float">🚀</div><script>
+console.log('Script berjalan');
+
+const LOGIN_USER = 'Dhika123';
+const LOGIN_PASS = 'Dhika123';
+
+function showNotification(text){
+const notif = document.getElementById('notification');
+notif.innerHTML = text;
+notif.style.display = 'block';
+setTimeout(()=>{
+notif.style.display = 'none';
+},2500);
+}
+
+function login(){
+try{
+const user = document.getElementById('username').value.trim();
+const pass = document.getElementById('password').value.trim();
+
+console.log('Login:', user, pass);
+
+if(user === LOGIN_USER && pass === LOGIN_PASS){
+localStorage.setItem('isLogin','true');
+
+document.getElementById('loginBox').style.display = 'none';
+document.getElementById('mainContent').style.display = 'block';
+
+showNotification('Login berhasil 🚀');
+}else{
+showNotification('Username atau password salah ❌');
+}
+}catch(err){
+console.error(err);
+alert('Terjadi error pada login');
+}
+}
+
+function logout(){
+localStorage.removeItem('isLogin');
+location.reload();
+}
+
+window.onload = function(){
+console.log('Website loaded');
+
+if(localStorage.getItem('isLogin') === 'true'){
+document.getElementById('loginBox').style.display = 'none';
+document.getElementById('mainContent').style.display = 'block';
+}
+
+updateClock();
+}
+
+function toggleMode(){
+document.body.classList.toggle('light');
+}
+
+function updateClock(){
+const now = new Date();
+document.getElementById('clock').innerHTML = '🕒 ' + now.toLocaleTimeString('id-ID');
+}
+
+setInterval(updateClock,1000);
+
+const ctx = document.getElementById('financeChart');
+
+const chart = new Chart(ctx,{
+type:'line',
+data:{
+labels:['Awal'],
+datasets:[{
+label:'Saldo',
+data:[0],
+borderWidth:3,
+fill:false
+}]
+},
+options:{
+responsive:true
+}
+});
+
+let targetTabungan = 0;
+let xp = 0;
+let level = 1;
+let coin = 0;
+
+function hitungKeuangan(){
+const income = parseInt(document.getElementById('income').value) || 0;
+const expense = parseInt(document.getElementById('expense').value) || 0;
+const total = income - expense;
+
+document.getElementById('totalMoney').innerHTML = 'Rp ' + total.toLocaleString('id-ID');
+
+chart.data.labels.push('Data');
+chart.data.datasets[0].data.push(total);
+chart.update();
+
+showNotification('Keuangan berhasil dihitung 💸');
+}
+
+function setGoal(){
+const goal = parseInt(document.getElementById('goalInput').value) || 0;
+
+if(goal <= 0){
+showNotification('Masukkan target yang benar 🎯');
+return;
+}
+
+targetTabungan = goal;
+showNotification('Target berhasil dibuat 🎉');
+}
+
+async function chatBot(event){
+if(event.key === 'Enter'){
+const input = document.getElementById('chatInput').value;
+const responseBox = document.getElementById('chatResponse');
+
+responseBox.innerHTML = '⏳ AI sedang berpikir...';
+
+try{
+const API_KEY = 'AIzaSyAiJA7IBX_1Ud9fUy7KdvNemzsLPCwVoqw';
+
+const response = await fetch(
+`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
+{
+method:'POST',
+headers:{
+'Content-Type':'application/json'
+},
+body:JSON.stringify({
+contents:[{
+parts:[{ text: input }]
+}]
+})
+}
+);
+
+const data = await response.json();
+
+const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'AI tidak menemukan jawaban 😅';
+
+responseBox.innerHTML = text;
+}catch(error){
+console.error(error);
+responseBox.innerHTML = 'AI error ❌';
+}
+}
+}
+</script></body>
+</html>padding:35px;
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(15px);
 border-radius:25px;
